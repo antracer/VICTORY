@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Поздравление 🌈</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif;
+  background: black;
+  color: white;
+}
+
+  /* Прелоадер */
+  #preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.5rem;
+    z-index: 9999;
+  }
+
+  #spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #ff4081;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Скрываем основной контент пока идет прелоадер */
+  #main-content {
+    display: none;
+  }
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 5vw;
+  font-weight: 700;
+  opacity: 0;
+  filter: blur(20px);
+  transition: opacity 1s ease, filter 1s ease;
+}
+.slide.active {
+  opacity: 1;
+  filter: blur(0);
+  z-index: 10; /* активный слайд всегда выше остальных */
+}
+.main-text {
+  position: relative; /* обязательно для z-index */
+  z-index: 2;         /* выше всех канвасов и видео */
+  text-align: center;
+  user-select: text;
+}
+.letter, .letter-k, .letter-i, .letter-t, .letter-o {
+  font-size: 15vw;
+  display: block;
+  user-select: text;
+}
+.letter { color: gold; text-shadow: 0 0 20px gold, 0 0 40px gold; animation: sparkle 2s infinite alternate; }
+.letter-i { color:#ffb3c2; text-shadow: 0 0 20px #ffccd5,0 0 40px #ffb3c2; animation: glow-i 2s infinite alternate; }
+.letter-k { color: #b3e5ff; text-shadow: 0 0 20px #b3e5ff, 0 0 40px #b3e5ff; animation: glow-k 2s infinite alternate; }
+.letter-t { color:#ffcc80; text-shadow: 0 0 20px #ffcc80,0 0 40px #ffcc80; animation: glow-t 2s infinite alternate; }
+.letter-o { color:#f0b3ff; text-shadow: 0 0 20px #f0b3ff,0 0 40px #f0b3ff; animation: glow-o 2.5s infinite alternate; }
+
+.word { display:block; font-size:5vw; margin-top:0.5em; user-select:text; }
+.song { font-size:2vw; margin-top:0.5em; opacity:0.8; user-select:text; }
+
+.bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+  filter: brightness(0.5) blur(2px);
+  transition: filter 0.5s ease;
+}
+
+/* Абсолютные канвасы для всех слайдов */
+#gold-particles, #sparkles-i, #soft-lights, #butterflies, #hearts-petals, #bubbles-o, #wave-o {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.bg-svg { position:absolute; inset:0; width:100%; height:100%; z-index:-2; }
+
+@keyframes sparkle { 0%{text-shadow:0 0 20px gold,0 0 40px gold;}50%{text-shadow:0 0 30px gold,0 0 60px gold;}100%{text-shadow:0 0 20px gold,0 0 40px gold;} }
+@keyframes glow-i { 0%{text-shadow:0 0 20px #ffccd5,0 0 40px #ffb3c2;}50%{text-shadow:0 0 30px #ffccd5,0 0 60px #ffb3c2;}100%{text-shadow:0 0 20px #ffccd5,0 0 40px #ffb3c2;} }
+@keyframes glow-k { 0% { text-shadow: 0 0 20px #b3e5ff, 0 0 40px #b3e5ff; } 50% { text-shadow: 0 0 30px #b3e5ff, 0 0 60px #b3e5ff; } 100% { text-shadow: 0 0 20px #b3e5ff, 0 0 40px #b3e5ff; } }
+@keyframes glow-t { 0% { text-shadow: 0 0 20px #ffcc80, 0 0 40px #ffcc80; } 50% { text-shadow: 0 0 30px #ffcc80, 0 0 60px #ffcc80; } 100% { text-shadow: 0 0 20px #ffcc80, 0 0 40px #ffcc80; } }
+@keyframes glow-o { 0% { text-shadow: 0 0 20px #f0b3ff, 0 0 40px #f0b3ff; } 50% { text-shadow: 0 0 30px #f0b3ff, 0 0 60px #f0b3ff; } 100% { text-shadow: 0 0 20px #f0b3ff, 0 0 40px #f0b3ff; } }
+
+.letter-r {
+  font-size: 15vw;
+  display: block;
+  color: #80ffe6;
+  text-shadow: 0 0 20px #80ffe6, 0 0 40px #80ffe6;
+  animation: glow-r 2s infinite alternate;
+  user-select: text;
+}
+
+@keyframes glow-r {
+  0% { text-shadow: 0 0 20px #80ffe6, 0 0 40px #80ffe6; }
+  50% { text-shadow: 0 0 30px #80ffe6, 0 0 60px #80ffe6; }
+  100% { text-shadow: 0 0 20px #80ffe6, 0 0 40px #80ffe6; }
+}
+
+@keyframes glow-g {
+  0% { text-shadow: 0 0 20px #8fffa1, 0 0 40px #8fffa1; }
+  50% { text-shadow: 0 0 30px #8fffa1, 0 0 60px #8fffa1; }
+  100% { text-shadow: 0 0 20px #8fffa1, 0 0 40px #8fffa1; }
+}
+
+@keyframes glow-apple {
+  0% { text-shadow: 0 0 20px #ff7f7f, 0 0 40px #ff7f7f; }
+  50% { text-shadow: 0 0 30px #ffb3b3, 0 0 60px #ff7f7f; }
+  100% { text-shadow: 0 0 20px #ff7f7f, 0 0 40px #ff7f7f; }
+}
+
+#confetti-canvas {
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  pointer-events:none;
+  z-index:1;
+}
+
+/* Пасхалка на 9-м слайде */
+/* Пасхалка на 9-м слайде */
+#slide9 .easter-egg {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  font-size: 0.5em;
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+  cursor: default;
+  user-select: text;
+  animation: blink 2s infinite ease-in-out;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* Эффект при наведении */
+#slide9 .easter-egg:hover {
+  color: rgba(255, 255, 255, 0.8);
+  transform: scale(1.1);
+}
+
+/* Анимация мерцания */
+@keyframes blink {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+</style>
+</head>
+<body>
+<!-- Прелоадер -->
+<div id="preloader">
+  <div id="spinner"></div>
+  <div id="timer">10</div> секунд
+</div>
+
+<div id="main-content">
+<!-- Слайд 1 — Великолепная -->
+<div class="slide active" id="slide-v">
+  <video muted loop preload="auto" poster="src/20250426.png" class="bg-video">
+    <source src="src/20250426.mp4" type="video/mp4">
+  </video>
+  <canvas id="gold-particles"></canvas>
+  <div class="main-text">
+    <span class="letter" style="color:#ffd700;">В</span>
+    <span class="word" style="color:#ffd700;">🌹 Великолепная 🌟</span>
+    <p class="song" style="padding-top:1rem; color:#ffd700;">
+      🎵 "<a style="color:inherit" href="https://music.yandex.ru/track/23799478">Let's live tonight like fireflies...</a>" 🎵
+    </p>
+  </div>
+</div>
+
+<!-- Слайд 2 — Изысканная -->
+<div class="slide" id="slide-i">
+  <video muted loop preload="auto" poster="src/20250901.png" class="bg-video">
+    <source src="src/20250901.mp4" type="video/mp4">
+  </video>
+  <svg class="bg-svg" id="bg-i">
+    <defs>
+      <pattern id="lace-pattern-i" width="50" height="50" patternUnits="userSpaceOnUse">
+        <path d="M0,0 L50,50 M50,0 L0,50" stroke="rgba(255,255,255,0.05)" stroke-width="0.7"/>
+        <circle cx="25" cy="25" r="8" stroke="rgba(255,255,255,0.05)" stroke-width="0.7" fill="none"/>
+        <path d="M10,25 Q25,0 40,25 Q25,50 10,25" stroke="rgba(255,255,255,0.03)" stroke-width="0.5" fill="none"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#lace-pattern-i)" />
+  </svg>
+  <canvas id="sparkles-i"></canvas>
+  <div class="main-text">
+    <span class="letter-i">И</span>
+    <span class="word" style="color:#ffb3c2;">💎 Изысканная ✨</span>
+    <p class="song" style="padding-top:1rem; color:#ffb3c2;">
+      🎵 "<a style="color:inherit" href="https://music.yandex.ru/track/94070660">Living fast forward, but not tonight...</a>" 🎵
+    </p>
+  </div>
+</div>
+
+<!-- Слайд 3 — Кроткая -->
+<div class="slide" id="slide-k">  
+  <video muted loop preload="auto" poster="src/20250729.png" class="bg-video">
+    <source src="src/20250729.mp4" type="video/mp4">
+  </video>
+  <canvas id="soft-lights"></canvas>
+  <canvas id="butterflies"></canvas>
+  <div class="main-text">
+    <span class="letter-k">К</span>
+    <span class="word" style="color:#b3e5ff;">🐇 Кроткая 🌸</span>
+    <p class="song" style="padding-top:1rem; color:#b3e5ff;">
+      🎵 "<a style="color:inherit" href="https://music.yandex.ru/track/21084479">I see the dawn of a new beginning...</a>" 🎵
+    </p>
+  </div>
+</div>
+
+<!-- Слайд 4 — Тёплая -->
+<div class="slide" id="slide-t">
+  <video muted loop preload="auto" poster="src/20250210.png" class="bg-video">
+    <source src="src/20250210.mp4" type="video/mp4">
+  </video>
+  <canvas id="hearts-petals"></canvas>
+  <div class="main-text">
+    <span class="letter-t">Т</span>
+    <span class="word" style="color:#ffcc80;">🌿 Тёплая ☀️</span>
+    <p class="song" style="padding-top:1rem; color:#ffcc80;">
+      🎵 "<a style="color:inherit" href="https://music.yandex.ru/track/37948056">Gotta follow what I'm feelin' to discover where it's at...</a>" 🎵
+    </p>
+  </div>
+</div>
+
+<!-- Слайд 5 — Обаятельная -->
+<div class="slide" id="slide-o">
+  <video muted loop preload="auto" poster="src/20250514.png" class="bg-video">
+    <source src="src/20250514.mp4" type="video/mp4">
+  </video>
+  <canvas id="bubbles-o"></canvas>
+  <canvas id="wave-o"></canvas>
+  <div class="main-text">
+    <span class="letter-o">О</span>
+    <span class="word" style="color:#f0b3ff;">💫 Обаятельная 💖</span>
+    <p class="song" style="padding-top:1rem; color:#f0b3ff;">
+      🎵 «<a style="color:inherit" href="https://music.yandex.ru/track/63093543">Ты красивая как осень 🧡</a>» 🎵
+    </p>
+  </div>
+</div>
+
+<!-- Слайд 6 — Ритмичная -->
+<div class="slide" id="slide-r" style="z-index:2;">
+  <video muted loop preload="auto" poster="src/20250211.png" class="bg-video">
+    <source src="src/20250211.mp4" type="video/mp4">
+  </video>
+  <!-- Канвас для динамичного фона -->
+  <canvas id="r-background" style="position:absolute; inset:0; width:100%; height:100%; z-index:-2;"></canvas>
+  <canvas id="r-wave" style="position:absolute; inset:0; width:100%; height:100%; z-index:-1;"></canvas>
+
+  <!-- Текст -->
+  <div class="main-text">
+    <span class="letter-r">Р</span>
+    <span class="word" style="color:#80ffe6;">🎶 Ритмичная 💃</span>
+    <p class="song" style="padding-top:1rem; color:#80ffe6;">
+      🎵 "<a style="color:inherit" href="https://music.yandex.ru/track/60292250">Hey, hey, hey</a>" 🎵
+    </p>
+  </div>
+</div>
+
+<!-- Слайд 7 — Изумительная -->
+<div class="slide" id="slide-g">
+  <video muted loop preload="auto" poster="src/20250412.png" class="bg-video">
+    <source src="src/20250412.mp4" type="video/mp4">
+  </video>
+
+  <!-- Канвасы для эффектов -->
+  <canvas id="g-sparkles" style="position:absolute; inset:0; width:100%; height:100%; z-index:-1;"></canvas>
+  <canvas id="g-glimmer" style="position:absolute; inset:0; width:100%; height:100%; z-index:-1;"></canvas>
+
+  <!-- Текст -->
+  <div class="main-text">
+    <span class="letter-g" style="font-size:15vw; display:block; color:#8fffa1; text-shadow:0 0 20px #8fffa1,0 0 40px #8fffa1; animation: glow-g 2s infinite alternate;">И</span>
+    <span class="word" style="color:#8fffa1;">🏵️ Изумительная 💐</span>
+    <p class="song" style="padding-top:1rem; color:#8fffa1;">
+      🎵 "<a style="color:inherit" href="https://music.yandex.ru/track/33955210">Where d'you wanna go? How much you wanna risk?</a>" 🎵
+    </p>
+  </div>
+</div>
+
+<!-- Слайд 8 — Яблочная -->
+<div class="slide" id="slide-apple">
+  <video muted loop preload="auto" poster="src/20250319.png" class="bg-video">
+    <source src="src/20250319.mp4" type="video/mp4">
+  </video>
+
+  <!-- Канвасы для эффектов -->
+  <canvas id="apple-falling-leaves" style="position:absolute; inset:0; width:100%; height:100%; z-index:-1;"></canvas>
+
+  <!-- Текст -->
+  <div class="main-text">
+    <span class="letter-y" style="font-size:15vw; display:block; color:#ff7f7f; text-shadow:0 0 20px #ff7f7f,0 0 40px #ff7f7f; animation: glow-apple 2s infinite alternate;">Я</span>
+    <span class="word" style="color:#ff7f7f;">🍎 Яблочная 🍃</span>
+    <p class="song" style="padding-top:1rem; color:#ff7f7f;">
+      🎵 "<a style="color:inherit" href="https://music.yandex.ru/track/122527969">Turn it up and set the night alight</a>" 🎵
+    </p>
+  </div>
+</div>
+
+<!-- Слайд 9 — Финальный текст с конфетти -->
+<div class="slide" id="final-slide">
+  <svg class="bg-svg" id="bg1">
+    <defs>
+      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="red">
+          <animate attributeName="stop-color" values="red;orange;yellow;green;cyan;blue;violet;red" dur="30s" repeatCount="indefinite"/>
+        </stop>
+        <stop offset="100%" stop-color="orange">
+          <animate attributeName="stop-color" values="orange;yellow;green;cyan;blue;violet;red;orange" dur="30s" repeatCount="indefinite"/>
+        </stop>
+      </linearGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grad)" />
+  </svg>
+  <!-- Канвас для конфетти -->
+  <canvas id="confetti-canvas"></canvas>
+  <div id="slide9">
+  <!-- Основной текст -->
+    <div class="main-text" style="font-size: 1vw; text-align:center; color:white;">
+      <b>РЕКОМЕНДУЮ ЗАЦЕНИТЬ ПОЗЖЕ 💙</b><br><br>
+
+      <!-- Музыка -->
+      <a href="https://www.youtube.com/playlist?list=PL82y0Hvo7bZyzVY2cWxnY7PH4ApA8pkQD" style="color:white; display:block; margin: 0.8em 0;">Астапова, Чехова, Нюша</a>
+      <a href="https://www.youtube.com/watch?v=LyrJTUc87pU" style="color:white; display:block; margin: 0.8em 0;">SNAILKICK СМОТРИТ | СЕРДЦА ЗА ЛЮБОВЬ | 25/09/2018</a><br>
+
+      <a href="https://www.youtube.com/playlist?list=PLejGw9J2xE9Vb9_I7EbGLiHCsTvQidFYg" style="color:white; display:block; margin: 0.8em 0;">ТЫ БУДЕШЬ СМЕЯТЬСЯ ДО СЛЁЗ, СТО ПО ДВЕСТИ, ИСТЕРИЧНЫЕ ВОПЛИ</a>
+      <a href="https://www.youtube.com/playlist?list=PLejGw9J2xE9Uu9HdaMJ3LSDbA9cDv2r47" style="color:white; display:block; margin: 0.8em 0;">ТАК ЕЩЕ НИКОГДА НЕ БОМБИЛО, ШАЛУН ТИММИ, ОДИН ШАНС ИЗ МИЛЛИАРДА</a>
+      <a href="https://www.youtube.com/watch?v=hmfxQ52uCXU" style="color:white; display:block; margin: 0.8em 0;">ЭТА ИГРА СВОДИТ С УМА ► ВЫНОС МОЗГА</a>
+      <a href="https://www.youtube.com/watch?v=BBFIdbg_8Xw" style="color:white; display:block; margin: 0.8em 0;">СИМУЛЯТОР ЗАПРАВКИ ► ХУДШИЙ РАБОТНИК МЕСЯЦА ► ВЫНОС МОЗГА</a><br>
+
+      <!-- Игры -->
+      <a href="https://store.steampowered.com/app/1122720/Sayonara_Wild_Hearts" style="color:white; display:block; margin: 1em 0;">Игра "Sayonara Wild Heart" (10 часов max)</a>
+      <a href="https://store.steampowered.com/app/1240210/There_Is_No_Game_Wrong_Dimension" style="color:white; display:block; margin: 1em 0;">Игра "There Is No Game: Wrong Dimension" (6 часов max)</a>
+      <a href="https://store.steampowered.com/sub/320795/" style="color:white; display:block; margin: 1em 0;">Трилогия игр "Batman: Arkham" (118.5 часов, за 2 часа в день за 2 месяца можно пройти)</a><br>
+
+      <!-- Фильмы -->
+      <a href="https://www.kinopoisk.ru/film/1101569/" style="color:white; display:block; margin: 1em 0;">Боевик «День курка»</a>
+      <a href="https://www.kinopoisk.ru/film/1196157/" style="color:white; display:block; margin: 1em 0;">Тёплая мелодрама «Секрет»</a>
+      <a href="https://www.kinopoisk.ru/film/493384/" style="color:white; display:block; margin: 1em 0;">Ромком «За бортом» (2018)</a>
+      <a href="https://www.youtube.com/watch?v=g3U5-_Z7pYw" style="color:white; display:block; margin: 1em 0;">Мультфильм «Как поймать перо Жар-Птицы»</a>
+      <a href="https://www.kinopoisk.ru/series/4397762/" style="color:white; display:block; margin: 1em 0;">Сериал «Скрежет металла»</a><br>
+
+      <!-- Плейлист -->
+      <a href="https://www.youtube.com/playlist?list=PLjZIXvGozd3kTz6UAGHMwMzhuMm1erlwN" style="color:white; display:block; margin: 1em 0;">Что послушать осенью?</a>
+      </div>
+    <p class="easter-egg">https://vm.tiktok.com/ZMAu7AKdq/</p>
+  </div>
+
+</div>
+</div>
+<script>
+  let timeLeft = 10;
+  const timerEl = document.getElementById('timer');
+  const preloader = document.getElementById('preloader');
+  const mainContent = document.getElementById('main-content');
+
+  const countdown = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(countdown);
+      preloader.style.display = 'none';
+      mainContent.style.display = 'block';
+    }
+  }, 1000);
+
+const slides = document.querySelectorAll('.slide');
+let index=0, isAnimating=false;
+
+// Запуск видео первого слайда при загрузке
+window.addEventListener('load', () => {
+  const firstVideo = slides[0].querySelector('video');
+  if(firstVideo) {
+    firstVideo.play().catch(err => {
+      console.log('Видео не смогло автоматически проиграться:', err);
+    });
+  }
+});
+
+function showSlide(i){
+  slides.forEach((s, idx)=>{
+    s.classList.remove('active');
+    s.style.zIndex = 1;
+
+    const video = s.querySelector('video');
+    if(video) video.pause(); // пауза всех видео
+  });
+
+  slides[i].classList.add('active');
+  slides[i].style.zIndex = 10;
+
+  const activeVideo = slides[i].querySelector('video');
+  if(activeVideo) activeVideo.play(); // проигрываем только активное
+}
+
+function changeSlide(direction){
+  if(isAnimating) return;
+  isAnimating=true;
+  index+=direction;
+  if(index<0) index=0;
+  if(index>=slides.length) index=slides.length-1;
+  showSlide(index);
+  setTimeout(()=>isAnimating=false,1000);
+}
+window.addEventListener('wheel', e=>{ if(e.deltaY>0) changeSlide(1); else if(e.deltaY<0) changeSlide(-1); });
+window.addEventListener('keydown', e=>{ if(e.key==="ArrowDown"||e.key===" ") changeSlide(1); if(e.key==="ArrowUp") changeSlide(-1); });
+
+/* Золотые частицы — слайд 1 */
+const canvas = document.getElementById('gold-particles');
+const ctx = canvas.getContext('2d');
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+let particles = Array.from({length:100}, ()=>({
+  x:Math.random()*canvas.width,
+  y:Math.random()*canvas.height,
+  size:Math.random()*3+1,
+  speedY:Math.random()*0.5+0.2,
+  alpha:Math.random()*0.8+0.2
+}));
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    ctx.fillStyle=`rgba(255,215,0,${p.alpha})`;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
+    p.y-=p.speedY; if(p.y<0) p.y=canvas.height;
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+/* Белые блики — слайд 2 */
+const canvasI = document.getElementById('sparkles-i');
+const ctxI = canvasI.getContext('2d');
+canvasI.width=window.innerWidth; canvasI.height=window.innerHeight;
+let sparkles = Array.from({length:80}, ()=>({
+  x:Math.random()*canvasI.width,
+  y:Math.random()*canvasI.height,
+  size:Math.random()*2+1,
+  speedY:Math.random()*0.3+0.1,
+  alpha:Math.random()*0.5+0.1
+}));
+function animateSparkles(){
+  ctxI.clearRect(0,0,canvasI.width,canvasI.height);
+  sparkles.forEach(s=>{
+    ctxI.fillStyle=`rgba(255,255,255,${s.alpha})`;
+    ctxI.beginPath(); ctxI.arc(s.x,s.y,s.size,0,Math.PI*2); ctxI.fill();
+    s.y-=s.speedY; if(s.y<0) s.y=canvasI.height;
+  });
+  requestAnimationFrame(animateSparkles);
+}
+animateSparkles();
+
+/* Светлые круги + бабочки — слайд 3 */
+const soft = document.getElementById('soft-lights');
+const ctxS = soft.getContext('2d');
+soft.width=window.innerWidth; soft.height=window.innerHeight;
+let lights = Array.from({length:60}, ()=>({
+  x:Math.random()*soft.width,
+  y:Math.random()*soft.height,
+  r:Math.random()*50+20,
+  alpha:Math.random()*0.3+0.1,
+  speedY:Math.random()*0.2+0.05
+}));
+function animateLights(){
+  ctxS.clearRect(0,0,soft.width,soft.height);
+  lights.forEach(l=>{
+    let g=ctxS.createRadialGradient(l.x,l.y,0,l.x,l.y,l.r);
+    g.addColorStop(0,`rgba(255,255,255,${l.alpha})`);
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctxS.fillStyle=g;
+    ctxS.beginPath(); ctxS.arc(l.x,l.y,l.r,0,Math.PI*2); ctxS.fill();
+    l.y+=l.speedY; if(l.y-l.r>soft.height) l.y=-l.r;
+  });
+  requestAnimationFrame(animateLights);
+}
+animateLights();
+
+const butterflies = document.getElementById('butterflies');
+const ctxB = butterflies.getContext('2d');
+butterflies.width=window.innerWidth; butterflies.height=window.innerHeight;
+let bflies = Array.from({length:15}, ()=>({
+  x:Math.random()*butterflies.width,
+  y:Math.random()*butterflies.height,
+  s:Math.random()*0.8+0.4,
+  a:Math.random()*Math.PI*2,
+  sp:Math.random()*1+0.5
+}));
+function drawButterfly(x,y,s,a){
+  ctxB.save(); ctxB.translate(x,y); ctxB.rotate(Math.sin(a)*0.5); ctxB.scale(s,s);
+  ctxB.beginPath();
+  ctxB.moveTo(0,0);
+  ctxB.quadraticCurveTo(-10,-15,-25,0);
+  ctxB.quadraticCurveTo(-10,5,0,0);
+  ctxB.moveTo(0,0);
+  ctxB.quadraticCurveTo(10,-15,25,0);
+  ctxB.quadraticCurveTo(10,5,0,0);
+  ctxB.fillStyle="rgba(255,255,255,0.8)";
+  ctxB.fill(); ctxB.restore();
+}
+function animateButterflies(){
+  ctxB.clearRect(0,0,butterflies.width,butterflies.height);
+  bflies.forEach(bt=>{
+    bt.y-=bt.sp;
+    bt.x += Math.sin(bt.a)*1.5;
+    bt.a+=0.05;
+    if(bt.y<-50) bt.y=butterflies.height+50;
+    if(bt.x<0) bt.x=0;
+    if(bt.x>butterflies.width) bt.x=butterflies.width;
+    drawButterfly(bt.x,bt.y,bt.s,bt.a);
+  });
+  requestAnimationFrame(animateButterflies);
+}
+animateButterflies();
+
+/* Слайд 4 — Тёплая: лепестки, сердечки, мягкие линии */
+const hpCanvas = document.getElementById('hearts-petals');
+const ctxHP = hpCanvas.getContext('2d');
+
+hpCanvas.width = window.innerWidth;
+hpCanvas.height = window.innerHeight;
+
+// Частицы для лепестков и сердечек
+let hpParticles = Array.from({ length: 60 }, () => ({
+  x: Math.random() * hpCanvas.width,
+  y: Math.random() * hpCanvas.height,
+  type: Math.random() < 0.5 ? 'heart' : 'leaf',
+  size: Math.random() * 25 + 15,
+  speedY: Math.random() * 0.4 + 0.1,
+  alpha: Math.random() * 0.5 + 0.4,
+  angle: Math.random() * Math.PI * 2
+}));
+
+function drawHeart(x, y, s, alpha) {
+  ctxHP.save();
+  ctxHP.translate(x, y);
+  ctxHP.scale(s / 20, s / 20);
+  ctxHP.beginPath();
+  ctxHP.moveTo(0, 0);
+  ctxHP.bezierCurveTo(-10, -10, -20, 10, 0, 20);
+  ctxHP.bezierCurveTo(20, 10, 10, -10, 0, 0);
+  ctxHP.fillStyle = `rgba(255, 204, 128, ${alpha})`;
+  ctxHP.fill();
+  ctxHP.restore();
+}
+
+function drawLeaf(x, y, s, alpha, a) {
+  ctxHP.save();
+  ctxHP.translate(x, y);
+  ctxHP.rotate(Math.sin(a) * 0.5);
+  ctxHP.beginPath();
+  ctxHP.moveTo(0, 0);
+  ctxHP.quadraticCurveTo(s * 0.5, -s * 1.2, s * 1, 0);
+  ctxHP.quadraticCurveTo(s * 0.5, s * 1.2, 0, 0);
+  ctxHP.fillStyle = `rgba(255, 204, 128, ${alpha})`;
+  ctxHP.fill();
+  ctxHP.restore();
+}
+
+function animateHpParticles() {
+  ctxHP.clearRect(0, 0, hpCanvas.width, hpCanvas.height);
+  hpParticles.forEach(p => {
+    if (p.type === 'heart') drawHeart(p.x, p.y, p.size, p.alpha);
+    else drawLeaf(p.x, p.y, p.size, p.alpha, p.angle);
+
+    p.y -= p.speedY;
+    if (p.y < -30) p.y = hpCanvas.height + 30;
+  });
+  requestAnimationFrame(animateHpParticles);
+}
+
+animateHpParticles();
+
+window.addEventListener('resize', () => {
+  hpCanvas.width = window.innerWidth;
+  hpCanvas.height = window.innerHeight;
+});
+
+// Пузырьки / сияющие огоньки
+const canvasBubblesO = document.getElementById('bubbles-o');
+const ctxBubblesO = canvasBubblesO.getContext('2d');
+canvasBubblesO.width = window.innerWidth;
+canvasBubblesO.height = window.innerHeight;
+
+let bubblesO = Array.from({length:60}, () => ({
+  x: Math.random()*canvasBubblesO.width,
+  y: Math.random()*canvasBubblesO.height,
+  r: Math.random()*8 + 3,
+  alpha: Math.random()*0.5 + 0.3,
+  speedY: Math.random()*0.3 + 0.1,
+  speedX: (Math.random()-0.5)*0.2
+}));
+
+function animateBubblesO(){
+  ctxBubblesO.clearRect(0,0,canvasBubblesO.width,canvasBubblesO.height);
+  bubblesO.forEach(b=>{
+    ctxBubblesO.beginPath();
+    ctxBubblesO.arc(b.x, b.y, b.r, 0, Math.PI*2);
+    ctxBubblesO.fillStyle = `rgba(240,179,255,${b.alpha})`;
+    ctxBubblesO.fill();
+    b.y -= b.speedY;
+    b.x += b.speedX;
+    if(b.y<-10) b.y = canvasBubblesO.height + 10;
+    if(b.x<0) b.x = canvasBubblesO.width;
+    if(b.x>canvasBubblesO.width) b.x = 0;
+  });
+  requestAnimationFrame(animateBubblesO);
+}
+animateBubblesO();
+
+// Волна / перелив
+// при инициализации
+const waveO = document.getElementById('wave-o');
+const ctxWaveO = waveO.getContext('2d');
+
+function resizeWaveO() {
+  waveO.width = window.innerWidth;
+  waveO.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeWaveO);
+resizeWaveO(); // установка размеров при загрузке
+
+let waveOffsetO = 0;
+
+function animateWaveO() {
+  ctxWaveO.clearRect(0, 0, waveO.width, waveO.height);
+
+  const gradient = ctxWaveO.createLinearGradient(0, 0, waveO.width, waveO.height);
+  gradient.addColorStop(0, 'rgba(240,179,255,0.05)');
+  gradient.addColorStop(1, 'rgba(255,255,255,0.05)');
+  ctxWaveO.fillStyle = gradient;
+  ctxWaveO.beginPath();
+
+  const baseLine = waveO.height * 0.75;
+  const amplitude = 7;
+
+  for (let x = 0; x < waveO.width; x++) {
+    const y = Math.sin((x + waveOffsetO) / 50) * amplitude + baseLine;
+    ctxWaveO.lineTo(x, y);
+  }
+
+  ctxWaveO.lineTo(waveO.width, waveO.height);
+  ctxWaveO.lineTo(0, waveO.height);
+  ctxWaveO.closePath();
+  ctxWaveO.fill();
+
+  waveOffsetO += 2; // скорость движения волны
+  requestAnimationFrame(animateWaveO);
+}
+
+// старт анимации
+animateWaveO();
+
+window.addEventListener('resize', ()=>{
+  waveO.width = window.innerWidth;
+  waveO.height = window.innerHeight;
+});
+
+// Слайд Р — динамичные полосы
+const rBgCanvas = document.getElementById('r-background');
+const rBgCtx = rBgCanvas.getContext('2d');
+rBgCanvas.width = window.innerWidth;
+rBgCanvas.height = window.innerHeight;
+
+let stripes = [];
+for(let i=0;i<50;i++){
+  stripes.push({
+    x: Math.random()*rBgCanvas.width,
+    width: Math.random()*10+5,
+    speed: Math.random()*2+1,
+    hue: Math.random()*360,
+    alpha: Math.random()*0.3+0.2
+  });
+}
+
+function animateRBackground(){
+  rBgCtx.clearRect(0,0,rBgCanvas.width,rBgCanvas.height);
+  stripes.forEach(s=>{
+    rBgCtx.fillStyle = `hsla(${s.hue},100%,50%,${s.alpha})`;
+    rBgCtx.fillRect(s.x,0,s.width,rBgCanvas.height);
+    s.x += s.speed;
+    if(s.x > rBgCanvas.width) s.x = -s.width;
+  });
+  requestAnimationFrame(animateRBackground);
+}
+animateRBackground();
+
+// 7
+// Канвас с базовыми блестками
+const gCanvas = document.getElementById('g-sparkles');
+const gCtx = gCanvas.getContext('2d');
+gCanvas.width = window.innerWidth;
+gCanvas.height = window.innerHeight;
+
+let gParticles = Array.from({length:100}, () => ({
+  x: Math.random()*gCanvas.width,
+  y: Math.random()*gCanvas.height,
+  r: Math.random()*3+1,
+  alpha: Math.random()*0.7+0.3,
+  speedY: Math.random()*0.5+0.2
+}));
+
+function animateGParticles(){
+  gCtx.clearRect(0,0,gCanvas.width,gCanvas.height);
+  gParticles.forEach(p=>{
+    gCtx.fillStyle = `rgba(143,255,161,${p.alpha})`;
+    gCtx.beginPath(); gCtx.arc(p.x,p.y,p.r,0,Math.PI*2); gCtx.fill();
+    p.y -= p.speedY;
+    if(p.y < 0) p.y = gCanvas.height;
+  });
+  requestAnimationFrame(animateGParticles);
+}
+animateGParticles();
+
+// Канвас с переливающимися частицами
+const glimmerCanvas = document.getElementById('g-glimmer');
+const glimmerCtx = glimmerCanvas.getContext('2d');
+glimmerCanvas.width = window.innerWidth;
+glimmerCanvas.height = window.innerHeight;
+
+let glimmerParticles = Array.from({length:50}, () => ({
+  x: Math.random()*glimmerCanvas.width,
+  y: Math.random()*glimmerCanvas.height,
+  r: Math.random()*6+4,
+  alpha: Math.random()*0.5+0.3,
+  speedY: Math.random()*0.3+0.1,
+  hue: Math.random()*360,
+  sway: Math.random()*2+1
+}));
+
+function animateGlimmer(){
+  glimmerCtx.clearRect(0,0,glimmerCanvas.width,glimmerCanvas.height);
+  glimmerParticles.forEach(p=>{
+    p.alpha += (Math.random()-0.5)*0.05; // мягкое мерцание
+    if(p.alpha<0.1) p.alpha=0.1;
+    if(p.alpha>0.8) p.alpha=0.8;
+
+    glimmerCtx.fillStyle = `hsla(${p.hue}, 100%, 70%, ${p.alpha})`;
+    glimmerCtx.beginPath();
+    glimmerCtx.arc(p.x + Math.sin(Date.now()/1000 * p.sway)*20, p.y, p.r, 0, Math.PI*2);
+    glimmerCtx.fill();
+
+    p.y -= p.speedY;
+    if(p.y < -10) p.y = glimmerCanvas.height + 10;
+  });
+  requestAnimationFrame(animateGlimmer);
+}
+animateGlimmer();
+
+window.addEventListener('resize', ()=>{
+  gCanvas.width = glimmerCanvas.width = window.innerWidth;
+  gCanvas.height = glimmerCanvas.height = window.innerHeight;
+});
+
+// 8
+// Слайд 8 — Яблочная: падающие листья
+const leavesCanvas = document.getElementById('apple-falling-leaves');
+const leavesCtx = leavesCanvas.getContext('2d');
+leavesCanvas.width = window.innerWidth;
+leavesCanvas.height = window.innerHeight;
+
+// Листья
+const leavesCount = 40;
+let leaves = Array.from({length: leavesCount}, () => ({
+  x: Math.random() * leavesCanvas.width,
+  y: Math.random() * leavesCanvas.height,
+  size: Math.random() * 20 + 10,
+  speedY: Math.random() * 1 + 0.5,
+  speedX: Math.random() * 0.5 - 0.25,
+  angle: Math.random() * Math.PI * 2,
+  rotationSpeed: (Math.random() - 0.5) * 0.05,
+  color: `hsl(${30 + Math.random()*30}, 70%, 50%)` // оттенки оранжево-красного
+}));
+
+function drawLeafFalling(leaf) {
+  leavesCtx.save();
+  leavesCtx.translate(leaf.x, leaf.y);
+  leavesCtx.rotate(leaf.angle);
+  leavesCtx.beginPath();
+  leavesCtx.moveTo(0, 0);
+  leavesCtx.quadraticCurveTo(leaf.size * 0.5, -leaf.size, leaf.size, 0);
+  leavesCtx.quadraticCurveTo(leaf.size * 0.5, leaf.size, 0, 0);
+  leavesCtx.fillStyle = leaf.color;
+  leavesCtx.fill();
+  leavesCtx.restore();
+}
+
+function animateLeaves() {
+  leavesCtx.clearRect(0, 0, leavesCanvas.width, leavesCanvas.height);
+  leaves.forEach(leaf => {
+    drawLeafFalling(leaf);
+    leaf.y += leaf.speedY;
+    leaf.x += leaf.speedX + Math.sin(leaf.angle) * 0.5; // лёгкое колебание
+    leaf.angle += leaf.rotationSpeed;
+
+    // Перемещаем лист обратно наверх
+    if (leaf.y > leavesCanvas.height + 20) {
+      leaf.y = -20;
+      leaf.x = Math.random() * leavesCanvas.width;
+      leaf.angle = Math.random() * Math.PI * 2;
+    }
+  });
+  requestAnimationFrame(animateLeaves);
+}
+
+animateLeaves();
+
+// При ресайзе корректируем размеры канваса
+window.addEventListener('resize', () => {
+  leavesCanvas.width = window.innerWidth;
+  leavesCanvas.height = window.innerHeight;
+});
+
+// Подарок
+// Конфетти
+const confettiCanvas = document.getElementById('confetti-canvas');
+const ctxC = confettiCanvas.getContext('2d');
+confettiCanvas.width = window.innerWidth;
+confettiCanvas.height = window.innerHeight;
+
+let confettiParticles = Array.from({length:150}, () => ({
+  x: Math.random()*confettiCanvas.width,
+  y: Math.random()*confettiCanvas.height - confettiCanvas.height,
+  r: Math.random()*6+2,
+  color: `hsl(${Math.random()*360}, 100%, 60%)`,
+  speedY: Math.random()*3+1,
+  speedX: (Math.random()-0.5)*1.5,
+  angle: Math.random()*Math.PI*2
+}));
+
+function animateConfetti() {
+  ctxC.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  confettiParticles.forEach(p => {
+    ctxC.fillStyle = p.color;
+    ctxC.beginPath();
+    ctxC.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctxC.fill();
+
+    p.y += p.speedY;
+    p.x += p.speedX + Math.sin(p.angle)*0.5;
+    p.angle += 0.02;
+
+    if(p.y > confettiCanvas.height + 10) {
+      p.y = -10;
+      p.x = Math.random()*confettiCanvas.width;
+    }
+    if(p.x > confettiCanvas.width) p.x = 0;
+    if(p.x < 0) p.x = confettiCanvas.width;
+  });
+  requestAnimationFrame(animateConfetti);
+}
+animateConfetti();
+
+window.addEventListener('resize', () => {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+});
+</script>
+</body>
+</html>
